@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NLP Spam Classifier | M. Yuva Teja</title>
+
+
+    <style>
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+            font-family: 'Segoe UI', sans-serif;
+
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background: #f1f5f9;
+
+            display: flex;
+
+            flex-direction: column;
+
+            color: #1e293b;
+
+        }
+
+
+        /* Main Container */
+
+        .container {
+
+            width: 90%;
+
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 40px 0;
+
+            flex: 1;
+
+            display: flex;
+
+            align-items: center;
+
+        }
+
+
+        .main-box {
+
+            width: 100%;
+
+            min-height: 580px;
+
+            display: grid;
+
+            grid-template-columns: 0.85fr 1.15fr;
+
+            background: white;
+
+            border-radius: 22px;
+
+            overflow: hidden;
+
+            box-shadow: 0 15px 45px rgba(15, 23, 42, 0.10);
+
+        }
+
+
+        /* LEFT SECTION */
+
+        .left-section {
+
+            background: linear-gradient(
+
+                145deg,
+
+                #172554,
+
+                #1d4ed8,
+
+                #2563eb
+
+            );
+
+            padding: 55px 40px;
+
+            color: white;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: space-between;
+
+        }
+
+
+        .logo {
+
+            width: 65px;
+
+            height: 65px;
+
+            background: rgba(255,255,255,0.15);
+
+            border: 1px solid rgba(255,255,255,0.25);
+
+            border-radius: 18px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+            margin-bottom: 35px;
+
+        }
+
+
+        .left-section h1 {
+
+            font-size: 37px;
+
+            line-height: 1.3;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .left-section h1 span {
+
+            color: #93c5fd;
+
+        }
+
+
+        .left-description {
+
+            color: #dbeafe;
+
+            font-size: 15px;
+
+            line-height: 1.8;
+
+            margin-bottom: 35px;
+
+        }
+
+
+        .status-heading {
+
+            font-size: 19px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .status-card {
+
+            background: rgba(255,255,255,0.10);
+
+            border: 1px solid rgba(255,255,255,0.15);
+
+            border-radius: 13px;
+
+            padding: 17px;
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .status-card h3 {
+
+            font-size: 15px;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        .status-card p {
+
+            font-size: 13px;
+
+            color: #dbeafe;
+
+            line-height: 1.6;
+
+        }
+
+
+        .spam-color {
+
+            color: #fca5a5;
+
+        }
+
+
+        .ham-color {
+
+            color: #86efac;
+
+        }
+
+
+        .left-footer {
+
+            font-size: 12px;
+
+            color: #bfdbfe;
+
+            margin-top: 25px;
+
+        }
+
+
+        /* RIGHT SECTION */
+
+        .right-section {
+
+            padding: 55px 45px;
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .right-section h2 {
+
+            font-size: 27px;
+
+            color: #172554;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .subtitle {
+
+            color: #64748b;
+
+            font-size: 14px;
+
+            margin-bottom: 35px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .input-label {
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            margin-bottom: 12px;
+
+            color: #334155;
+
+        }
+
+
+        /* TEXTAREA */
+
+        textarea {
+
+            width: 100%;
+
+            height: 230px;
+
+            padding: 20px;
+
+            resize: vertical;
+
+            border: 1.5px solid #cbd5e1;
+
+            border-radius: 13px;
+
+            outline: none;
+
+            font-size: 15px;
+
+            color: #334155;
+
+            line-height: 1.7;
+
+            transition: 0.3s;
+
+            background: #f8fafc;
+
+        }
+
+
+        textarea:focus {
+
+            border-color: #2563eb;
+
+            background: white;
+
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+
+        }
+
+
+        textarea::placeholder {
+
+            color: #94a3b8;
+
+        }
+
+
+        /* BUTTONS */
+
+        .button-group {
+
+            display: flex;
+
+            gap: 15px;
+
+            margin-top: 22px;
+
+        }
+
+
+        button {
+
+            padding: 14px 30px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+        }
+
+
+        .check-btn {
+
+            background: #2563eb;
+
+            color: white;
+
+            flex: 1;
+
+        }
+
+
+        .check-btn:hover {
+
+            background: #1d4ed8;
+
+            transform: translateY(-2px);
+
+        }
+
+
+        .reset-btn {
+
+            background: #e2e8f0;
+
+            color: #334155;
+
+            min-width: 120px;
+
+        }
+
+
+        .reset-btn:hover {
+
+            background: #cbd5e1;
+
+        }
+
+
+        /* RESULT SECTION */
+
+        .result-section {
+
+            margin-top: 30px;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            background: #eff6ff;
+
+            border: 1px solid #bfdbfe;
+
+        }
+
+
+        .result-section h3 {
+
+            font-size: 14px;
+
+            color: #475569;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .result-text {
+
+            font-size: 22px;
+
+            font-weight: 700;
+
+            color: #1d4ed8;
+
+        }
+
+
+        .result-section.spam {
+
+            background: #fef2f2;
+
+            border-color: #fecaca;
+
+        }
+
+
+        .result-section.spam .result-text {
+
+            color: #dc2626;
+
+        }
+
+
+        .result-section.ham {
+
+            background: #f0fdf4;
+
+            border-color: #bbf7d0;
+
+        }
+
+
+        .result-section.ham .result-text {
+
+            color: #15803d;
+
+        }
+
+
+        .error-message {
+
+            margin-top: 20px;
+
+            padding: 15px;
+
+            background: #fef2f2;
+
+            border: 1px solid #fecaca;
+
+            color: #b91c1c;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+        }
+
+
+        /* BOTTOM FOOTER */
+
+        footer {
+
+            background: #172554;
+
+            padding: 23px 15px;
+
+            text-align: center;
+
+            color: #cbd5e1;
+
+            font-size: 13px;
+
+            line-height: 2;
+
+        }
+
+
+        footer strong {
+
+            color: #93c5fd;
+
+        }
+
+
+        footer .developer {
+
+            color: white;
+
+            font-weight: 700;
+
+        }
+
+
+        /* RESPONSIVE DESIGN */
+
+        @media(max-width: 850px) {
+
+            .main-box {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .left-section {
+
+                padding: 40px 30px;
+
+            }
+
+
+            .right-section {
+
+                padding: 40px 30px;
+
+            }
+
+
+        }
+
+
+        @media(max-width: 500px) {
+
+            .container {
+
+                width: 94%;
+
+                padding: 20px 0;
+
+            }
+
+
+            .left-section h1 {
+
+                font-size: 29px;
+
+            }
+
+
+            .right-section h2 {
+
+                font-size: 23px;
+
+            }
+
+
+            .button-group {
+
+                flex-direction: column;
+
+            }
+
+
+            .reset-btn {
+
+                width: 100%;
+
+            }
+
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <div class="main-box">
+
+
+            <!-- LEFT SECTION -->
+
+
+            <div class="left-section">
+
+
+                <div>
+
+
+                    <div class="logo">
+
+                        S
+
+                    </div>
+
+
+                    <h1>
+
+                        NLP <span>Spam</span><br>
+
+                        Classifier
+
+                    </h1>
+
+
+                    <p class="left-description">
+
+                        An intelligent email classification system
+
+                        powered by Natural Language Processing
+
+                        and Machine Learning algorithms.
+
+                    </p>
+
+
+                    <h2 class="status-heading">
+
+                        Check Email Status
+
+                    </h2>
+
+
+                    <div class="status-card">
+
+                        <h3 class="spam-color">
+
+                            ● Spam Email
+
+                        </h3>
+
+                        <p>
+
+                            Detect unwanted emails, suspicious
+
+                            messages, promotional spam and
+
+                            potentially harmful content.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="status-card">
+
+                        <h3 class="ham-color">
+
+                            ● Ham Email
+
+                        </h3>
+
+                        <p>
+
+                            Identify legitimate emails and
+
+                            normal messages that are classified
+
+                            as non-spam.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="left-footer">
+
+                    Machine Learning | NLP | Text Classification
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- RIGHT SECTION -->
+
+
+            <div class="right-section">
+
+
+                <h2>
+
+                    Analyze Your Email
+
+                </h2>
+
+
+                <p class="subtitle">
+
+                    Enter your email message below.
+
+                    Our Machine Learning model will analyze
+
+                    and classify your message.
+
+                </p>
+
+
+
+                <!-- FORM -->
+
+
+                <form action="/" method="POST" id="emailForm">
+
+
+                    <label class="input-label">
+
+                        Enter Your Email Message
+
+                    </label>
+
+
+                    <textarea
+
+                        name="message"
+
+                        id="message"
+
+                        placeholder="Type or paste your email message here..."
+
+                        required
+
+                    >{{ submitted_text }}</textarea>
+
+
+
+                    <!-- BUTTONS -->
+
+
+                    <div class="button-group">
+
+
+                        <button
+
+                            type="submit"
+
+                            class="check-btn"
+
+                        >
+
+                            CHECK EMAIL →
+
+                        </button>
+
+
+
+                        <button
+
+                            type="reset"
+
+                            class="reset-btn"
+
+                            onclick="resetResult()"
+
+                        >
+
+                            RESET ↺
+
+                        </button>
+
+
+                    </div>
+
+
+                </form>
+
+
+
+                <!-- PREDICTION RESULT -->
+
+
+                {% if prediction %}
+
+
+                    <div class="result-section
+
+                        {% if prediction == 'SPAM EMAIL' %}
+
+                            spam
+
+                        {% else %}
+
+                            ham
+
+                        {% endif %}
+
+                    " id="result">
+
+
+                        <h3>
+
+                            EMAIL CLASSIFICATION RESULT
+
+                        </h3>
+
+
+                        <div class="result-text">
+
+                            {{ prediction }}
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endif %}
+
+
+
+                <!-- ERROR MESSAGE -->
+
+
+                {% if error %}
+
+
+                    <div class="error-message" id="error">
+
+                        {{ error }}
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- FOOTER -->
+
+
+    <footer>
+
+
+        <div>
+
+            <strong>NLP SPAM CLASSIFIER</strong>
+
+            | Machine Learning Project
+
+        </div>
+
+
+        <div>
+
+            Developed by
+
+            <span class="developer">
+
+                M. Yuva Teja
+
+            </span>
+
+        </div>
+
+
+    </footer>
+
+
+
+    <!-- RESET SCRIPT -->
+
+
+    <script>
+
+
+        function resetResult() {
+
+
+            const result = document.getElementById("result");
+
+            const error = document.getElementById("error");
+
+
+            if (result) {
+
+                result.style.display = "none";
+
+            }
+
+
+            if (error) {
+
+                error.style.display = "none";
+
+            }
+
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>
